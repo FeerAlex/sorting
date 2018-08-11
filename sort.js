@@ -23,7 +23,7 @@ const deleteDir = (folder) => {
   fs.rmdirSync(folder, (err) => {
     if (err) throw err;
   });
-}
+};
 
 const readDir = (folder) => {
   const files = fs.readdirSync(folder);
