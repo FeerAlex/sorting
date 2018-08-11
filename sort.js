@@ -41,16 +41,14 @@ const readDir = (folder) => {
         fs.mkdirSync(newFolder);
       }
 
-      fs.readFileSync(fileName, (err, buffer) => {
-        if (err) throw err;
-
-        fs.writeFileSync(path.join(newFolder, file), buffer, err => {
-          if (err) throw err;
-        });
-      });
+      fs.linkSync(fileName, path.join(newFolder, file));
     }
   });
 };
+
+if (!fs.existsSync(finalFolder)) {
+  fs.mkdirSync(finalFolder);
+}
 
 readDir(baseFolder);
 
