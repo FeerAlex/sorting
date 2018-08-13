@@ -59,7 +59,9 @@ const readDir = (folder) => {
         fs.mkdirSync(newFolder);
       }
 
-      fs.linkSync(fileName, path.join(newFolder, file));
+      if (!fs.existsSync(path.join(newFolder, file))) {
+        fs.linkSync(fileName, path.join(newFolder, file));
+      }
     }
   });
 };
