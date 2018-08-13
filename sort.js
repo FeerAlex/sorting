@@ -4,6 +4,24 @@ let baseFolder = process.argv.slice(2)[0];
 let finalFolder = process.argv.slice(2)[1];
 let deleted = process.argv.slice(2)[2] === 'deleted';
 
+if (!baseFolder) {
+  console.error('Не указана исходная папка!');
+
+  return;
+}
+
+if (!finalFolder) {
+  console.error('Не указана новая папка!');
+
+  return;
+}
+
+if (baseFolder === finalFolder) {
+  console.error('Новая папка не должна иметь тот же путь, что и исходная!');
+
+  return;
+}
+
 const deleteDir = (folder) => {
   const files = fs.readdirSync(folder);
 
