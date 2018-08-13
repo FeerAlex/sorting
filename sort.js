@@ -11,40 +11,23 @@ if (baseFolder === finalFolder) {
 }
 
 const deleteDir = (folder) => {
-  fs.readdir(folder, (err, files) => {
-    if (err) {
-      console.error('Произошла ошибка при чтении папки!');
+  const files = fs.readdirSync(folder);
 
-      return;
-    }
+  files.forEach(file => {
+    let fileName = path.join(folder, file);
+    let state = fs.statSync(fileName);
 
-    files.forEach((file, index) => {
-      let fileName = path.join(folder, file);
-      
-      fs.stat(fileName, (err, state) => {
-        if (err) {
-          console.error('Произошла ошибка при чтении папки!');
-    
-          return;
-        }
-
-        if (state.isDirectory()) {
-          deleteDir(fileName);
-        } else {
-          fs.unlink(fileName, (err) => {
-            if (err) {
-              console.log('Произошла ошибка при удалении файла!');
-            }
-
-            if (index === files.length - 1) {
-              fs.rmdir(folder, (err) => {
-                console.log(err);
-              });
-            }
-          });
-        }
+    if (state.isDirectory()) {
+      deleteDir(fileName);
+    } else {
+      fs.unlinkSync(fileName, (err) => {
+        if (err) throw err;
       });
-    });
+    }
+  });
+
+  fs.rmdirSync(folder, (err) => {
+    if (err) throw err;
   });
 };
 
