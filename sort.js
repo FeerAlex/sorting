@@ -34,6 +34,12 @@ let deleteFile = (file) => {
   });
 }
 
+let removeDir = (folder) => {
+  return new Promise(resolve => {
+    fs.rmdir(folder, (err) => resolve());
+  });
+}
+
 let readDir = async (folder) => {
   let files = await getFiles(folder);
 
@@ -71,5 +77,5 @@ let deleteDir = async (folder) => {
 (async () => {
   fs.existsSync(finalFolder) || await createDir(finalFolder);
   await readDir(baseFolder);
-  deleted || await deleteDir(baseFolder);
+  !deleted || await deleteDir(baseFolder);
 })();
