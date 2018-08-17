@@ -5,38 +5,56 @@ let finalFolder = "./sort";
 let deleted = true;
 
 let getFiles = (folder) => {
-  return new Promise(resolve => {
-    fs.readdir(folder, (err, files) => resolve(files));
+  return new Promise((resolve, reject) => {
+    fs.readdir(folder, (err, files) => {
+      if (err) reject(err);
+      resolve(files)
+    });
   });
 }
 
 let isDirectory = (file) => {
-  return new Promise(resolve => {
-    fs.stat(file, (err, state) => resolve(state.isDirectory()));
+  return new Promise((resolve, reject) => {
+    fs.stat(file, (err, state) => {
+      if (err) reject(err);
+      resolve(state.isDirectory());
+    });
   });
 }
 
 let createDir = (folder) => {
-  return new Promise(resolve => {
-    fs.mkdir(folder, (err) => resolve());
+  return new Promise((resolve, reject) => {
+    fs.mkdir(folder, (err) => {
+      if (err) reject(err);
+      resolve();
+    });
   });
 }
 
 let copyFile = (from, to) => {
-  return new Promise(resolve => {
-    fs.link(from, to, (err) => resolve());
+  return new Promise((resolve, reject) => {
+    fs.link(from, to, (err) => {
+      if (err) reject(err);
+      resolve();
+    });
   });
 }
 
 let deleteFile = (file) => {
-  return new Promise(resolve => {
-    fs.unlink(file, (err) => resolve());
+  return new Promise((resolve, reject) => {
+    fs.unlink(file, (err) => {
+      if (err) reject(err);
+      resolve()
+    });
   });
 }
 
 let removeDir = (folder) => {
-  return new Promise(resolve => {
-    fs.rmdir(folder, (err) => resolve());
+  return new Promise((resolve, reject) => {
+    fs.rmdir(folder, (err) => {
+      if (err) reject(err);
+      resolve();
+    });
   });
 }
 
@@ -48,7 +66,7 @@ let readDir = async (folder) => {
     let isDir = await isDirectory(fileName);
 
     if (isDir) {
-      readDir(fileName);
+      await readDir(fileName);
     } else {
       let newFolder = path.join(finalFolder, file[0]);
       let newFile = path.join(newFolder, file);
@@ -67,15 +85,21 @@ let deleteDir = async (folder) => {
     let isDir = await isDirectory(fileName);
 
     if (isDir) {
-      deleteDir(fileName);
+      await deleteDir(fileName);
     } else {
       await deleteFile(fileName);
     }
   });
+
+  await removeDir(folder);
 };
 
 (async () => {
-  fs.existsSync(finalFolder) || await createDir(finalFolder);
-  await readDir(baseFolder);
-  !deleted || await deleteDir(baseFolder);
+  try {
+    fs.existsSync(finalFolder) || await createDir(finalFolder);
+    await readDir(baseFolder);
+    !deleted || await deleteDir(baseFolder);
+  } catch (error) {
+    console.log(error);
+  }
 })();
