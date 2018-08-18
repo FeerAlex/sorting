@@ -61,20 +61,20 @@ let removeDir = (folder) => {
 let readDir = async (folder) => {
   let files = await getFiles(folder);
 
-  files.forEach(async file => {
-    let fileName = path.join(folder, file);
+  for (let i = 0; i < files.length; ++i) {
+    let fileName = path.join(folder, files[i]);
     let isDir = await isDirectory(fileName);
 
     if (isDir) {
       await readDir(fileName);
     } else {
-      let newFolder = path.join(finalFolder, file[0]);
-      let newFile = path.join(newFolder, file);
+      let newFolder = path.join(finalFolder, files[i][0]);
+      let newFile = path.join(newFolder, files[i]);
 
       fs.existsSync(newFolder) || await createDir(newFolder);
       fs.existsSync(newFile) || await copyFile(fileName, newFile);
     }
-  });
+  }
 };
 
 let deleteDir = async (folder) => {
