@@ -58,7 +58,7 @@ let removeDir = (folder) => {
   });
 };
 
-let readDir = async (folder) => {
+let readDir = async (folder, to) => {
   let files = await getFiles(folder);
 
   for (let i = 0; i < files.length; ++i) {
@@ -66,9 +66,9 @@ let readDir = async (folder) => {
     let isDir = await isDirectory(fileName);
 
     if (isDir) {
-      await readDir(fileName);
+      await readDir(fileName, to);
     } else {
-      let newFolder = path.join(finalFolder, files[i][0]);
+      let newFolder = path.join(to, files[i][0]);
       let newFile = path.join(newFolder, files[i]);
 
       fs.existsSync(newFolder) || await createDir(newFolder);
@@ -94,17 +94,21 @@ let deleteDir = async (folder) => {
   await removeDir(folder);
 };
 
-(async () => {
-  if (baseFolder === finalFolder) {
+let copyFiles = async (from, to, deleted) => {
+  if (from === to) {
     console.error('Новая папка не должна иметь тот же путь, что и исходная!');
     return;
   }
 
   try {
-    fs.existsSync(finalFolder) || await createDir(finalFolder);
-    await readDir(baseFolder);
-    !deleted || await deleteDir(baseFolder);
+    fs.existsSync(to) || await createDir(to);
+    await readDir(from, to);
+    !deleted || await deleteDir(from);
   } catch (err) {
     console.log(err);
   }
-})();
+};
+
+copyFiles(baseFolder, finalFolder, deleted).then(() => {
+  console.log('Success!');
+});
